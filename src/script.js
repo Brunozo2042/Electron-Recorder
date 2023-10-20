@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isRecording = false
     let selectedDeviceId = null
+    let mediaRecorder = null
+    let chunks = []
 
     //Lista todos os dispositivos de audio do computador
     navigator.mediaDevices.enumerateDevices().then(devices => {
@@ -38,6 +40,37 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById("record").classList.remove('recording')
         }
     }
+
+    record.addEventListener("click", () => {
+        updateButtonTo(!isRecording)
+        handleRecord(isRecording)
+
+        isRecording = !isRecording
+    })
+
+    function handleRecord(recording) {
+        if (recording) {
+            mediaRecorder.stop()
+        } else {
+            navigator.mediaDevices.getUserMedia({ audio: { deviceId: selectedDeviceId }, video: false }).then(stream => {
+                mediaRecorder = new MediaRecorder(stream)
+                mediaRecorder.start()
+                mediaRecorder.ondataavailable = (event) => {
+                    chunks.push(event.data)
+                }
+                mediaRecorder.onstop = (event) => {
+                    saveData()
+                }
+            })
+        }
+    }
+
+    function saveData() {
+        const blob = new Blob(chunks, { "type": "audio/webm; codecs=opus" })
+        console.log(blob);
+        chunks = []
+    }
+
 })
 
 window.onload = () => {
