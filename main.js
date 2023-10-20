@@ -12,8 +12,8 @@ app.whenReady().then(() => {
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 500,
+    width: 750,
+    height: 450,
     backgroundColor: "#234",
     show: true,
     icon: path.join(__dirname, "assets", "icon.png"),
